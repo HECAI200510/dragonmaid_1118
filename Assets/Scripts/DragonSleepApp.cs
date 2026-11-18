@@ -24,7 +24,7 @@ namespace DragonMaidClock
 
         private SleepJournal journal;
         private SleepEntry viewed;
-        private Texture2D nightArt, morningArt, icons;
+        private SleepArtwork artwork;
         private Font sans, numbers;
         private GUIStyle label;
         private Page page;
@@ -39,9 +39,9 @@ namespace DragonMaidClock
         {
             useGUILayout = false;
             Application.targetFrameRate = 30;
-            nightArt = Resources.Load<Texture2D>("Art/NightWatch");
-            morningArt = Resources.Load<Texture2D>("Art/Morning");
-            icons = Resources.Load<Texture2D>("Art/JournalIcons");
+            if (!TryGetComponent(out artwork)) artwork = gameObject.AddComponent<SleepArtwork>();
+            artwork.Initialize(Resources.Load<Texture2D>("Art/NightWatch"),
+                Resources.Load<Texture2D>("Art/Morning"), Resources.Load<Texture2D>("Art/JournalIcons"));
             sans = Resources.Load<Font>("Fonts/JournalSans");
             if (sans == null)
                 sans = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", "Arial" }, 22);
@@ -207,7 +207,7 @@ namespace DragonMaidClock
             float artW = mobile ? w : w - x, artH = mobile ? 241 : heroH;
             Panel(new Rect(x, y, artW, artH));
             float imageH = artH - (mobile ? 66 : 83);
-            Art(new Rect(x + 1, y + 1, artW - 2, imageH), nightArt);
+            Art(new Rect(x + 1, y + 1, artW - 2, imageH), artwork.GetArtwork(ArtworkSlot.NightWatch));
             Badge(x + 14, y + 13, journal.OnDuty ? "今夜值夜" : "可选值夜", true);
             Label(new Rect(x + 18, y + imageH + 4, artW - 95, mobile ? 29 : 38),
                 "小红 · 缇露露", mobile ? 18 : 22, Ink, TextAnchor.MiddleLeft, true);
@@ -290,7 +290,7 @@ namespace DragonMaidClock
             float artW = mobile ? w : 455, artH = mobile ? 239 : 388;
             Panel(new Rect(0, 0, artW, artH));
             float photoH = mobile ? 172 : 278;
-            Art(new Rect(1, 1, artW - 2, photoH), nightArt);
+            Art(new Rect(1, 1, artW - 2, photoH), artwork.GetArtwork(ArtworkSlot.NightWatch));
             Label(new Rect(19, photoH + 4, artW - 38, mobile ? 31 : 42), "小红 · 缇露露", mobile ? 18 : 24, Ink, TextAnchor.MiddleLeft, true);
             Label(new Rect(19, photoH + (mobile ? 33 : 49), artW - 38, 27), "“给你留了一杯水，晚安。”", mobile ? 14 : 16, Gold);
             float x = mobile ? 0 : artW + 18, y = mobile ? artH + 12 : 0;
@@ -362,6 +362,7 @@ namespace DragonMaidClock
         private void Icon(Rect r, string name, Color c)
         {
             int i = Array.IndexOf(IconNames, name);
+            Texture2D icons = artwork.Icons;
             if (icons == null || i < 0) return;
             var old = GUI.color;
             GUI.color = c;

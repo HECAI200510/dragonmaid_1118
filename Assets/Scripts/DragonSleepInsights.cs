@@ -78,7 +78,7 @@ namespace DragonMaidClock
             float artH = mobile ? 155 : 186;
             float noteH = mobile ? 260 : 316;
             Panel(new Rect(rightX, rightY, rightW, noteH));
-            Art(new Rect(rightX + 1, rightY + 1, rightW - 2, artH), morningArt, 15);
+            Art(new Rect(rightX + 1, rightY + 1, rightW - 2, artH), artwork.GetArtwork(ArtworkSlot.Morning), 15);
             float noteY = rightY + artH + 12;
             Icon(new Rect(rightX + 19, noteY + 1, 20, 20), "cup", Gold);
             Label(new Rect(rightX + 48, noteY - 3, rightW - 66, 27),
